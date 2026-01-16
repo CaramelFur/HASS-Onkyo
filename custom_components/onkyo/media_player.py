@@ -208,20 +208,23 @@ class OnkyoMediaPlayer(MediaPlayerEntity):
         self._attr_source_list = list(self._rev_source_mapping)
         self._attr_sound_mode_list = list(self._rev_sound_mode_mapping)
 
-        # Initialize supported features based on zone capabilities
-        self._attr_supported_features = SUPPORTED_FEATURES_BASE
+        # Initialize supported features - assume volume and sound mode support by default
+        self._attr_supported_features = (
+            SUPPORTED_FEATURES_BASE
+            | SUPPORTED_FEATURES_VOLUME
+            | MediaPlayerEntityFeature.SELECT_SOUND_MODE
+        )
+        self._supports_volume = True
+        self._supports_sound_mode = True
         
-        # Check if zone supports volume control
-        if Code.get_from_kind_zone(Kind.VOLUME, zone) is not None:
-            self._attr_supported_features |= SUPPORTED_FEATURES_VOLUME
-            self._supports_volume = True
+        # Remove volume control if zone doesn't support it
+        if Code.get_from_kind_zone(Kind.VOLUME, zone) is None:
+            self._attr_supported_features &= ~SUPPORTED_FEATURES_VOLUME
+            self._supports_volume = False
         
-        # Check if zone supports sound mode/listening mode
-        if Code.get_from_kind_zone(Kind.LISTENING_MODE, zone) is not None:
-            self._attr_supported_features |= MediaPlayerEntityFeature.SELECT_SOUND_MODE
-            self._supports_sound_mode = True
-        else:
-            # No technical possibility of support
+        # Remove sound mode if zone doesn't support it
+        if Code.get_from_kind_zone(Kind.LISTENING_MODE, zone) is None:
+            self._attr_supported_features &= ~MediaPlayerEntityFeature.SELECT_SOUND_MODE
             self._supports_sound_mode = None
 
         self._attr_extra_state_attributes = {}
