@@ -1,6 +1,7 @@
 {
   "domain": "onkyo",
   "name": "Onkyo",
+  "version": "2024.1.0",
   "codeowners": ["@arturpragacz", "@eclair4151"],
   "config_flow": true,
   "dependencies": ["network"],
@@ -10,6 +11,7 @@
   "loggers": ["aioonkyo"],
   "quality_scale": "bronze",
   "requirements": ["aioonkyo==0.3.0"],
+  "can_override_core": true,
   "ssdp": [
     {
       "deviceType": "urn:schemas-upnp-org:device:MediaRenderer:1",
